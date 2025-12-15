@@ -3,6 +3,7 @@ import com.financeTracker.financeTracker.Enums.TransactionType;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,7 +17,7 @@ public class TransactionDTO {
     private BigDecimal amount;
     private TransactionType transactionType;
     private String description;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }
 

@@ -1,13 +1,20 @@
 package com.financeTracker.financeTracker.service;
 
+import com.financeTracker.financeTracker.DTO.AggregationResponseDTO;
 import com.financeTracker.financeTracker.DTO.TransactionDTO;
+import com.financeTracker.financeTracker.Enums.AggregationMode;
 import com.financeTracker.financeTracker.model.Transaction;
 import com.financeTracker.financeTracker.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.financeTracker.financeTracker.Enums.AggregationMode.MONTH;
+import static com.financeTracker.financeTracker.Enums.AggregationMode.WEEK;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +29,33 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<TransactionDTO> getTransactions(Long fromEpoch, Long toEpoch) {
+
+        Instant to;
+        Instant from;
+
+        if (fromEpoch != null && toEpoch != null) {
+
+            if (fromEpoch > toEpoch) {
+                throw new IllegalArgumentException("from cannot be greater than to");
+            }
+
+            from = Instant.ofEpochMilli(fromEpoch);
+            to = Instant.ofEpochMilli(toEpoch);
+
+        } else {
+            to = Instant.now();                // UTC now
+            from = to.minus(365, ChronoUnit.DAYS);
+        }
+
+        return transactionRepository.findByCreatedAtBetween(from, to)
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
 
     @Override
     public TransactionDTO getTransactionById(Long id) {
@@ -59,6 +93,41 @@ public class TransactionServiceImpl implements TransactionService {
         }
         transactionRepository.deleteById(id);
     }
+
+    @Override
+    public List<AggregationResponseDTO> aggregate(
+            AggregationMode mode,
+            Long fromEpoch,
+            Long toEpoch) {
+
+        if (fromEpoch == null || toEpoch == null) {
+            throw new IllegalArgumentException("from and to timestamps are required");
+        }
+
+        if (fromEpoch > toEpoch) {
+            throw new IllegalArgumentException("from timeStamp cannot be greater than to");
+        }
+
+        Instant from = Instant.ofEpochMilli(fromEpoch);
+        Instant to = Instant.ofEpochMilli(toEpoch);
+
+        List<Object[]> rows;
+
+        switch (mode) {
+            case MONTH -> rows = transactionRepository.aggregateByMonth(from, to);
+            case WEEK -> rows = transactionRepository.aggregateByWeek(from, to);
+            default -> throw new IllegalArgumentException("Unsupported aggregation mode");
+        }
+
+        return rows.stream()
+                .map(row -> AggregationResponseDTO.builder()
+                        .periodStart(((java.sql.Timestamp) row[0]).toInstant())
+                        .totalCredit((java.math.BigDecimal) row[1])
+                        .totalDebit((java.math.BigDecimal) row[2])
+                        .build())
+                .toList();
+    }
+
 
     // --------- Mapper methods ---------
 
