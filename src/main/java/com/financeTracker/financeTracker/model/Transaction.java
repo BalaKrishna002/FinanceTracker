@@ -30,6 +30,10 @@ public class Transaction {
     @Column(name = "description", length = 255)
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
