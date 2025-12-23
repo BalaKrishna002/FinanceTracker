@@ -5,9 +5,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginRequest {
+public class UserRegisterRequestDTO {
 
+    private String fullName;
     private String email;
     private String password;
+    private String timezone;
+    private String currency;
+    private String role = "USER";
 }
 

@@ -1,50 +1,32 @@
 package com.financeTracker.financeTracker.service;
 
-import com.financeTracker.financeTracker.DTO.AuthResponse;
-import com.financeTracker.financeTracker.DTO.LoginRequest;
-import com.financeTracker.financeTracker.DTO.RegisterRequest;
-import com.financeTracker.financeTracker.model.User;
-import com.financeTracker.financeTracker.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.financeTracker.financeTracker.utils.JWTUtil;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private static final int EXPIRY_MINUTES = 60;
 
-    public void register(RegisterRequest request) {
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtil jwtUtil;
 
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
-        }
-
-        User user = User.builder()
-                .fullName(request.getFullName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .timezone(request.getTimezone())
-                .currency(request.getCurrency())
-                .build();
-
-        userRepository.save(user);
+    public AuthService(AuthenticationManager authenticationManager,
+                       JWTUtil jwtUtil) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
-    public AuthResponse login(LoginRequest request) {
+    public String login(String email, String password) {
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+        Authentication authentication =
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(email, password)
+                );
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("Invalid credentials");
-        }
-
-        String token = jwtService.generateToken(user);
-        return new AuthResponse(token);
+        return jwtUtil.generateToken(authentication.getName(), EXPIRY_MINUTES);
     }
 }
-

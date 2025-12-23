@@ -18,15 +18,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.financeTracker.financeTracker.Enums.AggregationMode.MONTH;
-import static com.financeTracker.financeTracker.Enums.AggregationMode.WEEK;
-
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final AuthenticatedUserProvider authenticatedUserProvider;
+    private final UserService userService;
 
     @Override
     public List<TransactionDTO> getAllTransactions() {
@@ -39,7 +36,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<TransactionDTO> getTransactions(Long fromEpoch, Long toEpoch) {
 
-        User user = authenticatedUserProvider.getCurrentUser();
+        User user = userService.getCurrentUser();
         ZoneId zoneId = ZoneId.of(user.getTimezone());
 
         Instant from;
@@ -107,7 +104,7 @@ public class TransactionServiceImpl implements TransactionService {
             Long fromEpoch,
             Long toEpoch) {
 
-        User user = authenticatedUserProvider.getCurrentUser();
+        User user = userService.getCurrentUser();
         ZoneId zoneId = ZoneId.of(user.getTimezone());
 
         Instant from = Instant.ofEpochMilli(fromEpoch);

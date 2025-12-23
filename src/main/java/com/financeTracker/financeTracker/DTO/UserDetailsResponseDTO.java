@@ -1,16 +1,18 @@
 package com.financeTracker.financeTracker.DTO;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+@Data
 @Getter
 @Setter
-public class RegisterRequest {
+@AllArgsConstructor
+public class UserDetailsResponseDTO {
 
     private String fullName;
     private String email;
-    private String password;
     private String timezone;
     private String currency;
 }
-
