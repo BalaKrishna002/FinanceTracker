@@ -148,10 +148,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private Transaction toEntity(TransactionDTO dto) {
+
         return Transaction.builder()
                 .amount(dto.getAmount())
                 .transactionType(dto.getTransactionType())
                 .description(dto.getDescription())
+                .user(userService.getCurrentUser())
                 .build();
     }
 
