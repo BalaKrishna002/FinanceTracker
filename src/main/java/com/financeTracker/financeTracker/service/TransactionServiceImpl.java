@@ -106,7 +106,6 @@ public class TransactionServiceImpl implements TransactionService {
 
         User user = userService.getCurrentUser();
         ZoneId zoneId = ZoneId.of(user.getTimezone());
-        System.out.println(user.getId());
 
         Instant from = Instant.ofEpochMilli(fromEpoch);
         Instant to = Instant.ofEpochMilli(toEpoch);
