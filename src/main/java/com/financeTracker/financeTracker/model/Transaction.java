@@ -43,9 +43,7 @@ public class Transaction {
     // Automatically set timestamps
     @PrePersist
     protected void onCreate() {
-        Instant now = Instant.now(); // UTC
-        this.createdAt = now;
-        this.updatedAt = now;
+        this.updatedAt = Instant.now(); // UTC
     }
 
     @PreUpdate

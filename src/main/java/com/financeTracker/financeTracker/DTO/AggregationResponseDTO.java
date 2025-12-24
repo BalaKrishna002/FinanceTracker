@@ -11,10 +11,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 public class AggregationResponseDTO {
-
-    // Start of week / month (UTC)
     private Instant periodStart;
-
     private BigDecimal totalCredit;
     private BigDecimal totalDebit;
 }

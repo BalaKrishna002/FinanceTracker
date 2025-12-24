@@ -106,19 +106,19 @@ public class TransactionServiceImpl implements TransactionService {
 
         User user = userService.getCurrentUser();
         ZoneId zoneId = ZoneId.of(user.getTimezone());
+        System.out.println(user.getId());
 
         Instant from = Instant.ofEpochMilli(fromEpoch);
         Instant to = Instant.ofEpochMilli(toEpoch);
 
         List<Object[]> rows = switch (mode) {
             case MONTH -> transactionRepository.aggregateByMonth(user.getId(), from, to);
-            case WEEK -> transactionRepository.aggregateByWeek(user.getId(), from, to);
-            case DAY -> transactionRepository.aggregateByDay(user.getId(), from, to);
+            case YEAR -> transactionRepository.aggregateByYear(user.getId(), from, to);
         };
 
         return rows.stream()
                 .map(row -> {
-                    Instant utcInstant = Instant.parse(((Timestamp) row[0]).toString());
+                    Instant utcInstant = (Instant) row[0];
 
                     return AggregationResponseDTO.builder()
                             .periodStart(
@@ -149,11 +149,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     private Transaction toEntity(TransactionDTO dto) {
 
+        if(dto.getCreatedAt()==null){
+            dto.setCreatedAt(Instant.now());
+        }
+
         return Transaction.builder()
                 .amount(dto.getAmount())
                 .transactionType(dto.getTransactionType())
                 .description(dto.getDescription())
                 .user(userService.getCurrentUser())
+                .createdAt(dto.getCreatedAt())
                 .build();
     }
 
