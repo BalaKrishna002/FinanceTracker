@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f9fc;
+            padding: 20px;
+        }
+        .card {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
+        }
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="title">Welcome to FTRACK 🚀</div>
+
+        <p>Hi <b>$fullName</b>,</p>
+
+        <p>
+            Your account has been successfully created.
+            Start tracking your finances smarter and faster.
+        </p>
+
+        <p>
+            Happy tracking,<br/>
+            <b>FTRACK Team</b>
+        </p>
+    </div>
+</body>
+</html>

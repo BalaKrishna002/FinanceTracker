@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.security.Timestamp;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -24,6 +23,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final UserService userService;
+
+    // =========================
+    // API METHODS (UNCHANGED)
+    // =========================
 
     @Override
     public List<TransactionDTO> getAllTransactions() {
@@ -59,7 +62,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(tx -> toDTOWithUserTimezone(tx, zoneId))
                 .toList();
     }
-
 
     @Override
     public TransactionDTO getTransactionById(Long id) {
@@ -98,6 +100,10 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.deleteById(id);
     }
 
+    // =========================
+    // AGGREGATION (API)
+    // =========================
+
     @Override
     public List<AggregationResponseDTO> aggregate(
             AggregationMode mode,
@@ -107,12 +113,37 @@ public class TransactionServiceImpl implements TransactionService {
         User user = userService.getCurrentUser();
         ZoneId zoneId = ZoneId.of(user.getTimezone());
 
-        Instant from = Instant.ofEpochMilli(fromEpoch);
-        Instant to = Instant.ofEpochMilli(toEpoch);
+        return aggregateForUser(
+                user.getId(),
+                zoneId,
+                mode,
+                Instant.ofEpochMilli(fromEpoch),
+                Instant.ofEpochMilli(toEpoch)
+        );
+    }
+
+    // =========================
+    // AGGREGATION (CORE LOGIC)
+    // =========================
+
+    /**
+     * 🔹 Reusable aggregation logic
+     * Used by:
+     * - API
+     * - Scheduler (monthly summary email)
+     * - Future reports
+     */
+    public List<AggregationResponseDTO> aggregateForUser(
+            Long userId,
+            ZoneId zoneId,
+            AggregationMode mode,
+            Instant from,
+            Instant to
+    ) {
 
         List<Object[]> rows = switch (mode) {
-            case MONTH -> transactionRepository.aggregateByMonth(user.getId(), from, to);
-            case YEAR -> transactionRepository.aggregateByYear(user.getId(), from, to);
+            case MONTH -> transactionRepository.aggregateByMonth(userId, from, to);
+            case YEAR -> transactionRepository.aggregateByYear(userId, from, to);
         };
 
         return rows.stream()
@@ -123,7 +154,7 @@ public class TransactionServiceImpl implements TransactionService {
                             .periodStart(
                                     utcInstant.atZone(ZoneOffset.UTC)
                                             .withZoneSameInstant(zoneId)
-                                            .toOffsetDateTime().toInstant()
+                                            .toInstant()
                             )
                             .totalCredit((BigDecimal) row[1])
                             .totalDebit((BigDecimal) row[2])
@@ -132,8 +163,9 @@ public class TransactionServiceImpl implements TransactionService {
                 .toList();
     }
 
-
-    // --------- Mapper methods ---------
+    // =========================
+    // MAPPER METHODS
+    // =========================
 
     private TransactionDTO toDTO(Transaction entity) {
         return TransactionDTO.builder()
@@ -148,7 +180,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private Transaction toEntity(TransactionDTO dto) {
 
-        if(dto.getCreatedAt()==null){
+        if (dto.getCreatedAt() == null) {
             dto.setCreatedAt(Instant.now());
         }
 
@@ -172,16 +204,14 @@ public class TransactionServiceImpl implements TransactionService {
                         tx.getCreatedAt()
                                 .atZone(ZoneOffset.UTC)
                                 .withZoneSameInstant(zoneId)
-                                .toOffsetDateTime().toInstant()
+                                .toInstant()
                 )
                 .updatedAt(
                         tx.getUpdatedAt()
                                 .atZone(ZoneOffset.UTC)
                                 .withZoneSameInstant(zoneId)
-                                .toOffsetDateTime().toInstant()
+                                .toInstant()
                 )
                 .build();
     }
-
-
 }
