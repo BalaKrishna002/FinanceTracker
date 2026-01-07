@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Monthly Finance Summary</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8; padding:20px 0;">
+    <tr>
+        <td align="center">
+
+            <!-- Main Container -->
+            <table width="600" cellpadding="0" cellspacing="0"
+                   style="background-color:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+
+                <!-- Header -->
+                <tr>
+                    <td style="background:#000000; padding:20px; text-align:center;">
+                        <h1 style="margin:0; color:#ffffff; font-size:22px; letter-spacing:1px;">
+                            FTRACK
+                        </h1>
+                    </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                    <td style="padding:30px; color:#333333;">
+
+                        <h2 style="margin-top:0; font-size:20px;">
+                            Hello $fullName 👋
+                        </h2>
+
+                        <p style="font-size:15px; line-height:1.6; margin-bottom:25px;">
+                            Here’s your <strong>finance summary for last month</strong>.
+                            Keep tracking your money and stay in control 💪
+                        </p>
+
+                        <!-- Summary Cards -->
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td width="50%" style="padding-right:10px;">
+                                    <div style="background:#e8f5e9; border-radius:8px; padding:20px; text-align:center;">
+                                        <p style="margin:0; font-size:14px; color:#2e7d32;">
+                                            Total Credit
+                                        </p>
+                                        <h3 style="margin:10px 0 0; font-size:22px; color:#2e7d32;">
+                                            $totalCredit
+                                        </h3>
+                                    </div>
+                                </td>
+
+                                <td width="50%" style="padding-left:10px;">
+                                    <div style="background:#fdecea; border-radius:8px; padding:20px; text-align:center;">
+                                        <p style="margin:0; font-size:14px; color:#c62828;">
+                                            Total Debit
+                                        </p>
+                                        <h3 style="margin:10px 0 0; font-size:22px; color:#c62828;">
+                                            $totalDebit
+                                        </h3>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Divider -->
+                        <hr style="margin:30px 0; border:none; border-top:1px solid #eeeeee;" />
+
+                        <p style="font-size:14px; color:#666666; line-height:1.6;">
+                            Want deeper insights? Log in to your dashboard to explore
+                            daily, monthly, and yearly analytics 📊
+                        </p>
+
+                        <p style="margin-top:25px; font-size:14px;">
+                            Cheers,<br />
+                            <strong>Finance Tracker Team</strong>
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="background:#fafafa; padding:15px; text-align:center; font-size:12px; color:#999999;">
+                        © $year FTRACK · All rights reserved
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
